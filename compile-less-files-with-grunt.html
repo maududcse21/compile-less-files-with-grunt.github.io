@@ -1,0 +1,169 @@
+<html>
+  <head>
+    <title>Compile LESS Files with Grunt</title>
+    <link href="/images/favicon.ico" rel="shortcut icon">
+<link href="/fonts/clearsans/clearsans.css" rel="stylesheet" type="text/css" />
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+<meta name="title" content="Compile LESS Files with Grunt - ericnish.io"/>
+<meta name="description" content="A front-end developer's portfolio and blog"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta property="og:title" content="Compile LESS Files with Grunt - ericnish.io"/>
+<meta property="og:url" content="https://ericnish.io"/>
+<meta property="og:description" content="A front-end developer's portfolio and blog"/>
+<meta property="og:type" content="blog" />
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+
+    <link rel="canonical" href="https://ericnish.io/blog/compile-less-files-with-grunt/"/>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js" charset="UTF-8"></script></head>
+  <body>
+    <div class="blog-post-ctrl">
+      <div class="header">
+        <div class="header-content">
+          <div class="container">
+            <h1 class="header-title">Compile LESS Files with Grunt</h1>
+          </div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="row">
+          <div class="content">
+            <div class="post">
+              <p>Grunt is a Node task runner that can be configured to detect file changes and subsequently perform user-defined operations. By leveraging these features, we can have Grunt compile LESS files into CSS automatically.</p>
+
+<h2 id="step-1-install-nodejs">Step 1: Install Node.js</h2>
+
+<p><a href="http://nodejs.org/">Download a Node JS Software</a> and Install it.</p>
+
+<h2 id="step-2-install-grunt">Step 2: Install Grunt</h2>
+
+<p>Globally install Grunt using the Node package manager: Open your project folder then click folder URL and write cmd</p>
+
+<figure class="highlight"><pre style="background: #f5f5f5; padding: 20px; display: inline-block;"><code class="language-bash" data-lang="bash"><span class="nv"></span>npm install <span class="nt">-g</span> grunt-cli</code></pre></figure>
+
+<h2 id="step-3-create-a-gruntfilejs">Step 3: Create a Gruntfile.js</h2>
+
+<p>Now create a file called <code class="highlighter-rouge">Gruntfile.js</code> in your project directory.</p>
+
+<p>Then copy and paste in the example configuration shown just below this
+paragraph. You’ll just need to change the (commented) lines that define
+which files Grunt should keep an eye on, as well as the source and destination
+paths to the LESS and CSS files.</p>
+
+<p><b>Note:</b> You have to make a less file under less folder but no need to create CSS file</p>
+
+<figure class="highlight"><pre style="background: #f5f5f5; padding: 20px; display: inline-block;">module.exports = function(grunt) {
+  require('jit-grunt')(grunt);
+
+  grunt.initConfig({
+    less: {
+      development: {
+        options: {
+          compress: true,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          "css/main.css": "less/main.less" // destination file and source file
+        }
+      }
+    },
+
+    // all css file under css folder will convert RTL CSS
+    rtlcss: {
+      myTask:{
+        // task options 
+        options: {
+          
+          // rtlcss options 
+          opts: {
+            clean:false
+          },
+          // rtlcss plugins 
+          plugins:[], // save unmodified files 
+          saveUnmodified: true,
+        },
+        expand : true,
+        cwd    : 'css/',
+        dest   : 'css/',
+        src    : ['**/*.css', '!**/*.rtl.css'],
+        ext    : '.rtl.css'
+      }
+    },
+
+    // Every change of less file will make changes in CSS file if grunt command is running in CMD
+    watch: {
+      styles: {
+        files: ['less/**/*.less'], // which files to watch
+        tasks: ['less', 'rtlcss'],
+        options: {
+          nospawn: true
+        }
+      }
+    }
+  });
+
+  grunt.registerTask('default', ['less', 'watch']);
+  grunt.loadNpmTasks('grunt-rtlcss');
+};</pre></figure>
+
+
+
+
+
+<p>Note that providing <code class="highlighter-rouge">/**/*</code> in the watch path will watch files recursively
+under that directory.</p>
+
+<h2 id="step-4-configure-the-package-file">Step 4: Configure the package file</h2>
+
+<p>If you do not have an existing <code class="highlighter-rouge">package.json</code> file in your project directory,
+create one:</p>
+
+<figure class="highlight"><pre style="background: #f5f5f5; padding: 20px; display: inline-block;">{
+  "name": "project-name" // Example: my-first-project,
+  "version": "1.0.0",
+  "description": "Project Description" // Example: Details of project description,
+  "main": "index.html" // Main File Name with extension,
+  "author": "Themesroot",
+  "devDependencies": {
+    "grunt": "^1.0.4",
+    "grunt-contrib-less": "^2.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-rtlcss": "^2.0.1",
+    "jit-grunt": "^0.10.0"
+  }
+}</pre></figure>
+
+<p>Once you have a valid <code class="highlighter-rouge">package.json</code> file, write cmd</p>
+
+<figure class="highlight"><pre style="background: #f5f5f5; padding: 20px; display: inline-block;"><code class="language-bash" data-lang="bash"><span class="nv"></span>npm install grunt grunt-contrib-less grunt-contrib-watch jit-grunt grunt-rtlcss <span class="nt">--save-dev</span></code></pre></figure>
+
+<p>This will install the required packages and add them to <code class="highlighter-rouge">package.json</code>.</p>
+
+<h2 id="step-5-start-grunt">Step 5: Start Grunt by write cmd</h2>
+
+<figure class="highlight"><pre style="background: #f5f5f5; padding: 20px; display: inline-block;"><code class="language-bash" data-lang="bash"><span class="nv"></span>grunt</code></pre></figure>
+
+<p>While Grunt is running, it will compile your stylesheets every time you commit
+changes to one of your LESS files. Go ahead and give it a try.</p>
+
+<p>As you keep configuring more tasks, your Gruntfile.js can easily grow into an unmanageable beast so I suggest you also take a look at</p>
+
+            </div>
+            <div class="comments">
+              <div class="comments-inner">
+                <div id="disqus_thread"></div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+  <div style="font-style: italic; font-weight: bold;">
+    &copy; Maudud Hossain
+  </div>
+</footer>
+
+  </body>
+</html>
